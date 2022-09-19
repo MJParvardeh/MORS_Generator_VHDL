@@ -33,7 +33,6 @@ entity Mors_Detector is
 port(
 
 CH_Ready:in std_logic;
-MORSMode:in std_logic_vector(2 downto 0);
 
 MORS3:in integer range 0 to 255:=65;
 

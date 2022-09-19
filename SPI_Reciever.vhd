@@ -35,7 +35,6 @@ entity SPI_Reciever is
 
 port(
 SDI,SCK,SCS	:	in std_logic;
-MData			:	out std_logic_vector(11 downto 0);
 MORS3			:	out integer range 0 to 255:=65;
 MORS2			:	out integer range 0 to 255:=66;
 MORS1			:	out integer range 0 to 255:=67;
@@ -60,54 +59,49 @@ signal cnt:integer range 0 to 15;
 
 
 begin
+	process(SCK,SCS)
+		variable data:std_logic_vector(15 downto 0);
+		variable Tgl:std_logic;
+		begin
+		if(SCS='0')then
+				if(rising_edge(SCK))then 
+				data(0):=SDI;
 
-
-process(SCK,SCS)
-variable data:std_logic_vector(15 downto 0);
-variable Tgl:std_logic;
-begin
-
-if(SCS='0')then
-      if(rising_edge(SCK))then 
-      data(0):=SDI;
-
-      cnt<=cnt+1;
-           if(cnt=15)then
-					Buzzy<='0';            
-					cnt<=0;
-					case(data(15 downto 13))is
-						when "001"=>
-							MORS1<=conv_integer(data(7 downto 0));
-							M1R<='1';
-						when "010"=>
-							MORS2<=conv_integer(data(7 downto 0));
-							M2R<='1';
-						when "011"=>
-							MORS3<=conv_integer(data(7 downto 0));
-							M3R<='1';
-						when others=>
-							data:="0000000000000000";
+				cnt<=cnt+1;
+					  if(cnt=15)then
+							Buzzy<='0';            
+							cnt<=0;
+							case(data(15 downto 13))is
+								when "001"=>
+									MORS1<=conv_integer(data(7 downto 0));
+									M1R<='1';
+								when "010"=>
+									MORS2<=conv_integer(data(7 downto 0));
+									M2R<='1';
+								when "011"=>
+									MORS3<=conv_integer(data(7 downto 0));
+									M3R<='1';
+								when others=>
+									data:="0000000000000000";
+									M1R<='0';
+									M2R<='0';
+									M3R<='0';
+							end case;
+					  else
 							M1R<='0';
 							M2R<='0';
 							M3R<='0';
-					end case;
-           else
-					M1R<='0';
-					M2R<='0';
-					M3R<='0';
-					Buzzy<='1';
-					data:=data(14 downto 0)&'0' ;
-           end if;
-      end if;
-else
-M1R<='0';
-M2R<='0';
-M3R<='0';
-cnt<=0;
-data:="0000000000000000";
-end if;
-end process;
-
-
+							Buzzy<='1';
+							data:=data(14 downto 0)&'0' ;
+					  end if;
+				end if;
+		else
+		M1R<='0';
+		M2R<='0';
+		M3R<='0';
+		cnt<=0;
+		data:="0000000000000000";
+		end if;
+	end process;
 end Behavioral;
 
